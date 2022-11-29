@@ -1,0 +1,49 @@
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+
+/*
+.box {
+  background-color: rgba(255, 255, 255, 0.3);
+  border-radius: 5px;
+  font-family: sans-serif;
+  text-align: center;
+  line-height: 1;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  max-width: 50%;
+  max-height: 50%;
+  padding: 20px 40px;
+}
+
+html,
+body {
+  height: 100%;
+  width: 100%;
+}
+
+body {
+  background-image: url('https://img.freepik.com/fotos-premium/desenfoque-botellas-cerveza-bebida-alcoholica-estante-fondo-supermercado-concepto-mercado-bebidas-alcoholicas_254791-2588.jpg?w=2000');
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+.container {
+  align-items: center;
+  display: flex;
+  justify-content: center;
+  height: 100%;
+  width: 100%;
+}
+*/
