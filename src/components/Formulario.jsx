@@ -1,13 +1,16 @@
 import React, { useState, useEffect } from 'react'
 import { db } from '../firebase'
-import { collection, doc, addDoc, onSnapshot, deleteDoc } from 'firebase/firestore'
+import { collection, doc, addDoc, onSnapshot, deleteDoc , updateDoc} from 'firebase/firestore'
 
 const Formulario = () => {
 
     const [listaBebidas, setListaBebidas] = useState([])
-    const [nombrebebida, setBebida] = useState('')
+    const [id, setId] = useState(0)
+    const [modoEdicion, setModoEdicion] = useState(false)
+
+    const [nombrebebida, setNombreBebida] = useState('')
     const [tipobebida, setTipoBebida] = useState('')
-    const [descripcionbebida, setDescripcion] = useState('')
+    const [descripcionbebida, setDescripcionBebida] = useState('')
     const [saborbebida, setSaborBebida] = useState('')
     const [preciobebida, setPrecioBebida] = useState('')
     const [cantidadbebida, setCantidadBebida] = useState('')
@@ -28,25 +31,85 @@ const Formulario = () => {
     }, [])
 
     const eliminar = async id => {
+        try {
+            await deleteDoc(doc(db, 'bebidas', id))
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    const editar = item => {
+        setNombreBebida(item.nombreBebida)
+        setTipoBebida(item.tipoBebida)
+        setDescripcionBebida(item.descripcionBebida)
+        setSaborBebida(item.saborBebida)
+        setPrecioBebida(item.precioBebida)
+        setCantidadBebida(item.cantidadBebida)
+        setDistribuidorBebida(item.distribuidorBebida)
+        setEnvaseBebida(item.envaseBebida)
+        setId(item.id)
+        setModoEdicion(true)
+    }
+
+    const editarBebidas = async e => {
+        e.preventDefault();
         try{
-            await deleteDoc(doc(db,'bebidas',id))
+            const docRef = doc(db, 'bebidas', id);
+            await updateDoc(docRef,{
+                nombreBebida: nombrebebida,
+                tipoBebida: tipobebida,
+                descripcionBebida: descripcionbebida,
+                saborBebida: saborbebida,
+                precioBebida: preciobebida,
+                cantidadBebida: cantidadbebida,
+                distribuidorBebida: distribuidorbebida,
+                envaseBebida: envasebebida
+            })
+
+            const nuevoArray = listaBebidas.map(
+                item => item.id ===id ? {id:id,
+                    nombreBebida: nombrebebida,
+                    tipoBebida: tipobebida,
+                    descripcionBebida: descripcionbebida,
+                    saborBebida: saborbebida,
+                    precioBebida: preciobebida,
+                    cantidadBebida: cantidadbebida,
+                    distribuidorBebida: distribuidorbebida,
+                    envaseBebida: envasebebida
+                }:item
+            )
+
+            setListaBebidas(nuevoArray)
+            setModoEdicion(false)
+            setNombreBebida('')
+            setTipoBebida('')
+            setDescripcionBebida('')
+            setSaborBebida('')
+            setPrecioBebida('')
+            setCantidadBebida('')
+            setDistribuidorBebida('')
+            setEnvaseBebida('')
+            setId('')
         }catch(error){
             console.log(error)
         }
     }
 
-    const editar = item =>{
-        setBebida(item.nombreBebida)
-        setDescripcion(item.descripcionBebida)
+    const cancelar = () => {
+        setModoEdicion(false)
+        setNombreBebida('')
+        setTipoBebida('')
+        setDescripcionBebida('')
+        setSaborBebida('')
+        setPrecioBebida('')
+        setCantidadBebida('')
+        setDistribuidorBebida('')
+        setEnvaseBebida('')
+        setId('')
     }
 
     const guardarBebidas = async (e) => {
         e.preventDefault()
-
-        if (!nombrebebida.trim()) {
-            console.log('test')
-            return;
-        }
 
         try {
             const valores = {
@@ -77,9 +140,9 @@ const Formulario = () => {
                 }]
             )
 
-            setBebida('')
+            setNombreBebida('')
             setTipoBebida('')
-            setDescripcion('')
+            setDescripcionBebida('')
             setSaborBebida('')
             setPrecioBebida('')
             setCantidadBebida('')
@@ -102,9 +165,18 @@ const Formulario = () => {
                         {
                             listaBebidas.map(item => (
                                 <li className="list-group-item" key={item.id}>
-                                    <span className="lead">{item.nombreBebida}-{item.descripcionBebida}
-                                    <button className="btn btn-secondary btn-sm fload-end mx-2" onClick={()=>eliminar(item.id)}>Eliminar</button>
-                                    <button className="btn btn-info btn-sm fload-end" onClick={()=>editar(item)}>Editar</button>
+                                    <span className="lead">
+                                    Nombre: {item.nombreBebida}<br>
+                                    </br>Tipo: {item.tipoBebida}<br>
+                                    </br>Descripcion: {item.descripcionBebida}<br>
+                                    </br>Sabor: {item.saborBebida}<br>
+                                    </br>Precio: {item.precioBebida}<br>
+                                    </br>Cantidad: {item.cantidadBebida}ml<br>
+                                    </br>Distribuidor: {item.distribuidorBebida}<br>
+                                    </br>Mat.Envase: {item.envaseBebida}<br>
+                                    </br><br></br>
+                                        <button className="btn btn-secondary btn-sm fload-end mx-2" onClick={() => eliminar(item.id)}>Eliminar</button>
+                                        <button className="btn btn-info btn-sm fload-end" onClick={() => editar(item)}>Editar</button>
                                     </span>
                                 </li>
                             ))
@@ -113,14 +185,14 @@ const Formulario = () => {
                 </div>
                 <div className="col-4">
                     <div className=''>
-                        <h4 className="text-center">Agregar Bebidas</h4>
-                        <form onSubmit={guardarBebidas}>
+                        <h4 className="text-center">{modoEdicion ? 'Editar Bebidas' : 'Agregar Bebidas'}</h4>
+                        <form onSubmit={modoEdicion ? editarBebidas : guardarBebidas}>
 
                             <input type="text"
                                 className="form-control mb-2"
                                 placeholder='Ingrese el nombre de la Bebida'
                                 value={nombrebebida}
-                                onChange={(e) => setBebida(e.target.value)} />
+                                onChange={(e) => setNombreBebida(e.target.value)} />
 
                             <input type="text"
                                 className="form-control mb-2"
@@ -132,7 +204,7 @@ const Formulario = () => {
                                 className="form-control mb-2"
                                 placeholder='Ingrese la descripción de la Bebida'
                                 value={descripcionbebida}
-                                onChange={(e) => setDescripcion(e.target.value)} />
+                                onChange={(e) => setDescripcionBebida(e.target.value)} />
 
                             <input type="text"
                                 className="form-control mb-2"
@@ -162,17 +234,21 @@ const Formulario = () => {
                                 value={envasebebida}
                                 onChange={(e) => setEnvaseBebida(e.target.value)} />
 
-
-                            <button className="btn btn-success col-12 m-1" on='submit'>Agregar</button>
-
-
+                            {
+                                modoEdicion ?
+                                    (
+                                        <>
+                                            <button className="btn btn-info col-12 m-1" on='submit'>Editar</button>
+                                            <button className="btn btn-danger col-12 m-1" onClick={()=>cancelar()}>Cancelar</button>
+                                        </>
+                                    ) :
+                                    <button className="btn btn-success col-12 m-1" on='submit'>Agregar</button>
+                            }
                         </form>
-                        <button className="btn btn-danger col-12 m-1">Cancelar</button>
                     </div>
                 </div>
             </div>
         </div>
     )
 }
-
 export default Formulario
