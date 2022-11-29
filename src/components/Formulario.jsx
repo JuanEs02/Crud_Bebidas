@@ -1,6 +1,6 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { db } from '../firebase'
-import { collection, doc, addDoc } from 'firebase/firestore'
+import { collection, doc, addDoc, onSnapshot, deleteDoc } from 'firebase/firestore'
 
 const Formulario = () => {
 
@@ -13,6 +13,32 @@ const Formulario = () => {
     const [cantidadbebida, setCantidadBebida] = useState('')
     const [distribuidorbebida, setDistribuidorBebida] = useState('')
     const [envasebebida, setEnvaseBebida] = useState('')
+
+    useEffect(() => {
+        const obtenerDatos = async () => {
+            try {
+                await onSnapshot(collection(db, 'bebidas'), (query) => {
+                    setListaBebidas(query.docs.map((doc) => ({ ...doc.data(), id: doc.id })))
+                })
+            } catch (error) {
+                console.log(error)
+            }
+        }
+        obtenerDatos();
+    }, [])
+
+    const eliminar = async id => {
+        try{
+            await deleteDoc(doc(db,'bebidas',id))
+        }catch(error){
+            console.log(error)
+        }
+    }
+
+    const editar = item =>{
+        setBebida(item.nombreBebida)
+        setDescripcion(item.descripcionBebida)
+    }
 
     const guardarBebidas = async (e) => {
         e.preventDefault()
@@ -73,8 +99,16 @@ const Formulario = () => {
                 <div className="col-8">
                     <h4 className="text-center">Lista de Bebidas</h4>
                     <ul className="list-group">
-                        <li className="list-group-item">Bebida 1</li>
-                        <li className="list-group-item">Bebida 2</li>
+                        {
+                            listaBebidas.map(item => (
+                                <li className="list-group-item" key={item.id}>
+                                    <span className="lead">{item.nombreBebida}-{item.descripcionBebida}
+                                    <button className="btn btn-secondary btn-sm fload-end mx-2" onClick={()=>eliminar(item.id)}>Eliminar</button>
+                                    <button className="btn btn-info btn-sm fload-end" onClick={()=>editar(item)}>Editar</button>
+                                    </span>
+                                </li>
+                            ))
+                        }
                     </ul>
                 </div>
                 <div className="col-4">
