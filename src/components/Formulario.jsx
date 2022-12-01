@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { db } from '../firebase'
-import { collection, doc, addDoc, onSnapshot, deleteDoc , updateDoc} from 'firebase/firestore'
+import { collection, doc, addDoc, onSnapshot, deleteDoc, updateDoc } from 'firebase/firestore'
 
 const Formulario = () => {
 
@@ -16,6 +16,7 @@ const Formulario = () => {
     const [cantidadbebida, setCantidadBebida] = useState('')
     const [distribuidorbebida, setDistribuidorBebida] = useState('')
     const [envasebebida, setEnvaseBebida] = useState('')
+    const [imagenaleatoria, setImagenAleatoria] = useState('https://picsum.photos/200/299')
 
     useEffect(() => {
         const obtenerDatos = async () => {
@@ -47,15 +48,16 @@ const Formulario = () => {
         setCantidadBebida(item.cantidadBebida)
         setDistribuidorBebida(item.distribuidorBebida)
         setEnvaseBebida(item.envaseBebida)
+        setImagenAleatoria(item.imagenAleatoria)
         setId(item.id)
         setModoEdicion(true)
     }
 
     const editarBebidas = async e => {
         e.preventDefault();
-        try{
+        try {
             const docRef = doc(db, 'bebidas', id);
-            await updateDoc(docRef,{
+            await updateDoc(docRef, {
                 nombreBebida: nombrebebida,
                 tipoBebida: tipobebida,
                 descripcionBebida: descripcionbebida,
@@ -63,11 +65,13 @@ const Formulario = () => {
                 precioBebida: preciobebida,
                 cantidadBebida: cantidadbebida,
                 distribuidorBebida: distribuidorbebida,
-                envaseBebida: envasebebida
+                envaseBebida: envasebebida,
+                imagenAleatoria: imagenaleatoria
             })
 
             const nuevoArray = listaBebidas.map(
-                item => item.id ===id ? {id:id,
+                item => item.id === id ? {
+                    id: id,
                     nombreBebida: nombrebebida,
                     tipoBebida: tipobebida,
                     descripcionBebida: descripcionbebida,
@@ -75,8 +79,9 @@ const Formulario = () => {
                     precioBebida: preciobebida,
                     cantidadBebida: cantidadbebida,
                     distribuidorBebida: distribuidorbebida,
-                    envaseBebida: envasebebida
-                }:item
+                    envaseBebida: envasebebida,
+                    imagenAleatoria: imagenaleatoria
+                } : item
             )
 
             setListaBebidas(nuevoArray)
@@ -90,7 +95,8 @@ const Formulario = () => {
             setDistribuidorBebida('')
             setEnvaseBebida('')
             setId('')
-        }catch(error){
+            setImagenAleatoria('')
+        } catch (error) {
             console.log(error)
         }
     }
@@ -106,6 +112,7 @@ const Formulario = () => {
         setDistribuidorBebida('')
         setEnvaseBebida('')
         setId('')
+        setImagenAleatoria("")
     }
 
     const guardarBebidas = async (e) => {
@@ -120,7 +127,8 @@ const Formulario = () => {
                 precioBebida: preciobebida,
                 cantidadBebida: cantidadbebida,
                 distribuidorBebida: distribuidorbebida,
-                envaseBebida: envasebebida
+                envaseBebida: envasebebida,
+                imagenAleatoria: imagenaleatoria
             }
 
             const data = await addDoc(collection(db, 'bebidas'), valores)
@@ -136,7 +144,8 @@ const Formulario = () => {
                     cantidadBebida: cantidadbebida,
                     distribuidorBebida: distribuidorbebida,
                     envaseBebida: envasebebida,
-                    id: data.id
+                    id: data.id,
+                    imagenAleatoria: imagenaleatoria
                 }]
             )
 
@@ -148,7 +157,7 @@ const Formulario = () => {
             setCantidadBebida('')
             setDistribuidorBebida('')
             setEnvaseBebida('')
-
+            setImagenAleatoria("https://picsum.photos/200/299")
         } catch (error) {
             console.log(error)
         }
@@ -165,26 +174,36 @@ const Formulario = () => {
                         {
                             listaBebidas.map(item => (
                                 <li className="list-group-item" key={item.id}>
-                                    <span className="lead">
-                                    Nombre: {item.nombreBebida}<br>
-                                    </br>Tipo: {item.tipoBebida}<br>
-                                    </br>Descripcion: {item.descripcionBebida}<br>
-                                    </br>Sabor: {item.saborBebida}<br>
-                                    </br>Precio: {item.precioBebida}<br>
-                                    </br>Cantidad: {item.cantidadBebida}ml<br>
-                                    </br>Distribuidor: {item.distribuidorBebida}<br>
-                                    </br>Mat.Envase: {item.envaseBebida}<br>
-                                    </br><br></br>
-                                        <button className="btn btn-secondary btn-sm fload-end mx-2" onClick={() => eliminar(item.id)}>Eliminar</button>
-                                        <button className="btn btn-info btn-sm fload-end" onClick={() => editar(item)}>Editar</button>
-                                    </span>
+                                    <div className="container text-left">
+                                        <div className="row">
+                                            <div className="col" >
+                                                <span className="lead">
+                                                    Nombre: {item.nombreBebida}<br>
+                                                    </br>Tipo: {item.tipoBebida}<br>
+                                                    </br>Descripcion: {item.descripcionBebida}<br>
+                                                    </br>Sabor: {item.saborBebida}<br>
+                                                    </br>Precio: {item.precioBebida}<br>
+                                                    </br>Cantidad: {item.cantidadBebida}ml<br>
+                                                    </br>Distribuidor: {item.distribuidorBebida}<br>
+                                                    </br>Material del envase: {item.envaseBebida}<br>
+                                                    </br><br></br>
+                                                    <button className="btn btn-secondary btn-sm fload-end mx-2" onClick={() => eliminar(item.id)}>Eliminar</button>
+                                                    <button className="btn btn-info btn-sm fload-end" onClick={() => editar(item)}>Editar</button>
+                                                </span>
+                                            </div>
+                                            <div className="col text-center">
+                                                <img className="img-fluid img-thumbnail rounded" src={item.imagenAleatoria} alt="" />
+                                            </div>
+                                        </div>
+
+                                    </div>
                                 </li>
                             ))
                         }
                     </ul>
                 </div>
                 <div className="col-4">
-                    <div className=''>
+                    <div className='text-center'>
                         <h4 className="text-center">{modoEdicion ? 'Editar Bebidas' : 'Agregar Bebidas'}</h4>
                         <form onSubmit={modoEdicion ? editarBebidas : guardarBebidas}>
 
@@ -234,12 +253,19 @@ const Formulario = () => {
                                 value={envasebebida}
                                 onChange={(e) => setEnvaseBebida(e.target.value)} />
 
+                            <input type="text"
+                                    className='form-control mb-2'
+                                    placeholder='https://picsum.photos/200/299'
+                                    value='https://picsum.photos/200/299'
+            
+                                    onChange={(e)=>setImagenAleatoria(e.target.value)}/>    
+
                             {
                                 modoEdicion ?
                                     (
                                         <>
                                             <button className="btn btn-info col-12 m-1" on='submit'>Editar</button>
-                                            <button className="btn btn-danger col-12 m-1" onClick={()=>cancelar()}>Cancelar</button>
+                                            <button className="btn btn-danger col-12 m-1" onClick={() => cancelar()}>Cancelar</button>
                                         </>
                                     ) :
                                     <button className="btn btn-success col-12 m-1" on='submit'>Agregar</button>
