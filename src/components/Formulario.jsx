@@ -9,14 +9,75 @@ const Formulario = () => {
     const [modoEdicion, setModoEdicion] = useState(false)
 
     const [nombrebebida, setNombreBebida] = useState('')
-    const [tipobebida, setTipoBebida] = useState('')
+    const [tipobebida, setTipoBebida] = useState('Gaseosa')
     const [descripcionbebida, setDescripcionBebida] = useState('')
     const [saborbebida, setSaborBebida] = useState('')
     const [preciobebida, setPrecioBebida] = useState('')
     const [cantidadbebida, setCantidadBebida] = useState('')
     const [distribuidorbebida, setDistribuidorBebida] = useState('')
-    const [envasebebida, setEnvaseBebida] = useState('')
+    const [envasebebida, setEnvaseBebida] = useState('Vidrio')
     const [imagenaleatoria, setImagenAleatoria] = useState('https://picsum.photos/200/299')
+
+    function isAllComplete() {
+        if (!nombrebebida.trim()) {
+            alert('Agregue un nombre a la bebida')
+            return false;
+        }
+
+        if (!descripcionbebida.trim()) {
+            alert('Agrega una descripción a la bebida')
+            return false;
+        }
+
+        if (!saborbebida.trim()) {
+            alert('Agregue un sabor a la bebida')
+            return false;
+        }
+
+        if (!preciobebida.trim()) {
+            alert('Ingrese un precio a la bebida')
+            return false;
+        }
+
+        if (!cantidadbebida.trim()) {
+            alert('Agregue una cantidad a la bebida entre 150ml a 300ml')
+            return false;
+        }
+
+        if (!distribuidorbebida.trim()) {
+            alert('Agregue un distribuidor a la bebida')
+            return false;
+        }
+
+        return true;
+    }
+
+    function positivePrice() {
+        if (preciobebida <= 0) {
+            alert('El precio de la bebida de ser mayor a 0')
+            return false;
+        }
+        return true;
+    }
+
+    function litros() {
+        if (cantidadbebida < 150) {
+            alert('La cantidad minima de litros por bebida es de 150ml')
+            return false;
+        } else if (cantidadbebida > 300) {
+            alert('La cantidad maxima de litros por bebida es de 300ml')
+            return false;
+        }
+        return true;
+    }
+
+    function typeDrink(e) {
+        setTipoBebida(e.target.value);
+    }
+
+    function materialDrink(e) {
+        setEnvaseBebida(e.target.value);
+    }
 
     useEffect(() => {
         const obtenerDatos = async () => {
@@ -112,55 +173,62 @@ const Formulario = () => {
         setDistribuidorBebida('')
         setEnvaseBebida('')
         setId('')
-        setImagenAleatoria("")
+        setImagenAleatoria('')
     }
 
     const guardarBebidas = async (e) => {
         e.preventDefault()
 
-        try {
-            const valores = {
-                nombreBebida: nombrebebida,
-                tipoBebida: tipobebida,
-                descripcionBebida: descripcionbebida,
-                saborBebida: saborbebida,
-                precioBebida: preciobebida,
-                cantidadBebida: cantidadbebida,
-                distribuidorBebida: distribuidorbebida,
-                envaseBebida: envasebebida,
-                imagenAleatoria: imagenaleatoria
-            }
+        const nombreB = document.getElementById("nombrebebida").value;
+        const descripcionB = document.getElementById("descripcionbebida").value;
+        const saborB = document.getElementById("saborbebida").value;
+        const precioB = document.getElementById("preciobebida").value;
+        const cantidadB = document.getElementById("cantidadbebida").value;
+        const distribuidorB = document.getElementById("distribuidorbebida").value;
 
-            const data = await addDoc(collection(db, 'bebidas'), valores)
-
-            setListaBebidas = (
-                [...listaBebidas,
-                {
-                    nombreBebida: nombrebebida,
-                    tipoBebida: tipobebida,
-                    descripcionBebida: descripcionbebida,
-                    saborBebida: saborbebida,
-                    precioBebida: preciobebida,
-                    cantidadBebida: cantidadbebida,
-                    distribuidorBebida: distribuidorbebida,
-                    envaseBebida: envasebebida,
-                    id: data.id,
-                    imagenAleatoria: imagenaleatoria
-                }]
-            )
-
-            setNombreBebida('')
-            setTipoBebida('')
-            setDescripcionBebida('')
-            setSaborBebida('')
-            setPrecioBebida('')
-            setCantidadBebida('')
-            setDistribuidorBebida('')
-            setEnvaseBebida('')
-            setImagenAleatoria("https://picsum.photos/200/299")
-        } catch (error) {
-            console.log(error)
+        if (!isAllComplete(nombreB, descripcionB, saborB, precioB, cantidadB,
+            distribuidorB) || !positivePrice(precioB) || !litros(cantidadB)) {
+            return;
         }
+
+        const valores = {
+            nombreBebida: nombrebebida,
+            tipoBebida: tipobebida,
+            descripcionBebida: descripcionbebida,
+            saborBebida: saborbebida,
+            precioBebida: preciobebida,
+            cantidadBebida: cantidadbebida,
+            distribuidorBebida: distribuidorbebida,
+            envaseBebida: envasebebida,
+            imagenAleatoria: imagenaleatoria
+        }
+
+        const data = await addDoc(collection(db, 'bebidas'), valores)
+
+        setListaBebidas([...listaBebidas,
+        {
+            nombreBebida: nombrebebida,
+            tipoBebida: tipobebida,
+            descripcionBebida: descripcionbebida,
+            saborBebida: saborbebida,
+            precioBebida: preciobebida,
+            cantidadBebida: cantidadbebida,
+            distribuidorBebida: distribuidorbebida,
+            envaseBebida: envasebebida,
+            id: data.id,
+            imagenAleatoria: imagenaleatoria
+        }])
+
+        setNombreBebida('')
+        setTipoBebida('')
+        setDescripcionBebida('')
+        setSaborBebida('')
+        setPrecioBebida('')
+        setCantidadBebida('')
+        setDistribuidorBebida('')
+        setEnvaseBebida('')
+        setImagenAleatoria('https://picsum.photos/200/299')
+
     }
 
     return (
@@ -208,57 +276,78 @@ const Formulario = () => {
                         <form onSubmit={modoEdicion ? editarBebidas : guardarBebidas}>
 
                             <input type="text"
+                                id="nombrebebida"
                                 className="form-control mb-2"
                                 placeholder='Ingrese el nombre de la Bebida'
                                 value={nombrebebida}
                                 onChange={(e) => setNombreBebida(e.target.value)} />
 
-                            <input type="text"
-                                className="form-control mb-2"
-                                placeholder='Ingrese el tipo de la Bebida'
-                                value={tipobebida}
-                                onChange={(e) => setTipoBebida(e.target.value)} />
+                            <select id="tipobebida" value={tipobebida} className="form-select mb-2" aria-label="Default select example"
+                                onChange={e => typeDrink(e)}>
+
+                                <option value="Gaseosa" name="Gaseosa">Gaseosa</option>
+                                <option value="Jugo" name="Jugo">Jugo</option>
+                                <option value="Cerveza" name="Cerveza">Cerveza</option>
+                                <option value="Agua" name="Agua">Agua</option>
+
+                            </select>
 
                             <input type="text"
+                                id="descripcionbebida"
                                 className="form-control mb-2"
                                 placeholder='Ingrese la descripción de la Bebida'
                                 value={descripcionbebida}
                                 onChange={(e) => setDescripcionBebida(e.target.value)} />
 
                             <input type="text"
+                                id="saborbebida"
                                 className="form-control mb-2"
                                 placeholder='Ingrese el sabor de la bebida'
                                 value={saborbebida} onChange={(e) => setSaborBebida(e.target.value)} />
+                                
+                            <div class="input-group mb-3">
+                                <span class="input-group-text" id="basic-addon1">$</span>
+                                <input type="text"
+                                    id="preciobebida"
+                                    className="form-control"
+                                    placeholder='Ingrese el precio de la Bebida'
+                                    value={preciobebida}
+                                    onChange={(e) => setPrecioBebida(e.target.value)} />
+                            </div>
+
+                            <div class="input-group mb-3">
+                                <input type="text"
+                                    id="cantidadbebida"
+                                    className="form-control"
+                                    placeholder='Ingrese la cantidad de la Bebida'
+                                    value={cantidadbebida}
+                                    onChange={(e) => setCantidadBebida(e.target.value)} />
+                                <span class="input-group-text">ml</span>
+                            </div>
 
                             <input type="text"
-                                className="form-control mb-2"
-                                placeholder='Ingrese el precio de la Bebida'
-                                value={preciobebida}
-                                onChange={(e) => setPrecioBebida(e.target.value)} />
-
-                            <input type="text"
-                                className="form-control mb-2"
-                                placeholder='Ingrese la cantidad de la Bebida'
-                                value={cantidadbebida}
-                                onChange={(e) => setCantidadBebida(e.target.value)} />
-
-                            <input type="text"
+                                id="distribuidorbebida"
                                 className="form-control mb-2"
                                 placeholder='Ingrese el distribuidor de la Bebida'
                                 value={distribuidorbebida}
                                 onChange={(e) => setDistribuidorBebida(e.target.value)} />
-                            <input type="text"
-                                className="form-control mb-2"
-                                placeholder='Ingrese el material del envase de la Bebida'
-                                value={envasebebida}
-                                onChange={(e) => setEnvaseBebida(e.target.value)} />
+
+                            <select id="envasebebida" value={envasebebida} className="form-select mb-2" aria-label="Default select example"
+                                onChange={e => materialDrink(e)}>
+
+                                <option value="Vidrio" name="Vidrio">Vidrio</option>
+                                <option value="Plastico" name="Plastico">Plastico</option>
+                                <option value="Lata" name="Lata">Lata</option>
+                                <option value="Carton" name="Carton">Carton</option>
+
+                            </select>
 
                             <input type="text"
-                                    className='form-control mb-2'
-                                    placeholder='https://picsum.photos/200/299'
-                                    value='https://picsum.photos/200/299'
-            
-                                    onChange={(e)=>setImagenAleatoria(e.target.value)}/>    
+                                className='form-control mb-2'
+                                placeholder='https://picsum.photos/200/299'
+                                value='https://picsum.photos/200/299'
+
+                                onChange={(e) => setImagenAleatoria(e.target.value)} />
 
                             {
                                 modoEdicion ?
@@ -277,4 +366,5 @@ const Formulario = () => {
         </div>
     )
 }
+
 export default Formulario
