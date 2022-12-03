@@ -32,12 +32,6 @@ body {
   width: 100%;
 }
 
-body {
-  background-image: url('https://img.freepik.com/fotos-premium/desenfoque-botellas-cerveza-bebida-alcoholica-estante-fondo-supermercado-concepto-mercado-bebidas-alcoholicas_254791-2588.jpg?w=2000');
-  background-position: center center;
-  background-repeat: no-repeat;
-  background-size: cover;
-}
 
 .container {
   align-items: center;
@@ -47,3 +41,13 @@ body {
   width: 100%;
 }
 */
+
+body {
+  background-image: url('https://mobimg.b-cdn.net/v3/fetch/2c/2cc415b0b6da4273390b1025517d29ab.jpeg');
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  font-family: sans-serif;
+  color:white;
+  margin-bottom: 80px;
+}
